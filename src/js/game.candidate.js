@@ -39,12 +39,11 @@ class GameUi {
     /**
      * @type {number | null}
      */
-    this._timeoutId = null;
     this._boundTimeout = this.timeout.bind(this);
 
     this._snake = createSnake({
-      rows: 21,
-      columns: 21,
+      rows: 30,
+      columns: 55,
       nextFruitFn: undefined,
     });
 

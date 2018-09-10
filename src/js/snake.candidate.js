@@ -1,29 +1,5 @@
 import { Tiles, Direction } from './data/data_types.js';
 
-const defaultBoard = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
-
 /**
  * @param {SnakeConfigParams} config
  * @returns {Snake}
@@ -46,15 +22,39 @@ class Snake {
    */
   constructor(config) {
     this._config = Object.assign({}, config);
+    const { columns, rows } = this._config;
 
-    // currently ignores the config!
-    // starts with a copy of defaultBoard (21x21),
-    // with a snake in the middle, moving to the right
+    if(columns && typeof columns === 'number' && columns > 4
+      && rows && typeof rows === 'number' && rows > 4) {
 
-    this._board = defaultBoard.map(row => row.slice());
-    this._snake = [{ y: 10, x: 10 }];
-    this._direction = Direction.Right;
-    this._fruitPosition = this.getFruitPosition();
+
+
+      // currently ignores the config!
+      // starts with a copy of defaultBoard (21x21),
+      // with a snake in the middle, moving to the right
+
+      this._board = (() => {
+        const result = [];
+        for (let x = 0; x < columns; x++) {
+          for (let y = 0; y < rows; y++) {
+            result[y] = result[y] || [];
+            if (x === 0 || x === columns - 1 || y === 0 || y === rows - 1) {
+              result[y][x] = Tiles.Wall;
+            } else {
+              result[y][x] = Tiles.Empty;
+            }
+          }
+        }
+        return result;
+      })();
+      this._snake = [{y: Math.floor(rows / 2), x: Math.floor(columns / 2)}];
+      this._direction = Direction.Right;
+      const fruitPosition = this.generateNewFruitPosition();
+      this._board[fruitPosition.y][fruitPosition.x] = Tiles.Fruit;
+      this._fruitPosition = fruitPosition;
+    } else {
+      console.error('Invalid arguments');
+    }
   }
 
   /**
@@ -101,8 +101,14 @@ class Snake {
   generateNewFruitPosition() {
     let x = 0, y = 0;
     do {
-      x = getRandomInt(this._config.columns);
-      y = getRandomInt(this._config.rows);
+      if(this._config.nextFruitFn) {
+       const position = this._config.nextFruitFn();
+         x = position.x;
+         y = position.y;
+      } else {
+         x = getRandomInt(this._config.columns);
+         y = getRandomInt(this._config.rows);
+      }
     } while(!this.isValidFruitPosition({x, y}));
     return {
       x,
@@ -115,7 +121,7 @@ class Snake {
    */
   setDirection(direction) {
     // hopefully direction is one of the values from Direction import.
-    this._direction = direction;
+    Object.keys(Direction).map(k => Direction[k]).includes(direction) && ( this._direction = direction );
   }
 
   /**
@@ -138,16 +144,19 @@ class Snake {
     }
 
     let justAteFruit = !1;
+    let gameOver = !1;
     if(this._fruitPosition && this._snake[0].x === this._fruitPosition.x && this._snake[0].y === this._fruitPosition.y) {
       justAteFruit = !0;
+    }
+
+    if(this._snake[0].x === 0 || this._snake[0].x === this._config.columns -1 || this._snake[0].y === 0 || this._snake[0].y === this._config.rows - 1) {
+      gameOver = !0;
     }
 
     let newFruitPosition;
     if(justAteFruit) {
       newFruitPosition = this.generateNewFruitPosition();
     }
-
-
 
     const changes = [
       {
@@ -174,7 +183,7 @@ class Snake {
     }
 
     return {
-      gameOver: false,
+      gameOver,
       eating: justAteFruit,
       changes,
     };
