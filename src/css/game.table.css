@@ -1,0 +1,69 @@
+body {
+  position: relative;
+  margin: 12px;
+}
+
+#snake-game {
+  position: relative;
+  display: block;
+  font-family: 'Courier New';
+  font-size: 12px;
+  width: 252px;
+  height: 252px;
+  color: black;
+  background-color: #eee;
+}
+
+#snake-game.gameover:after {
+  content: 'GAME OVER';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  text-align: center;
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+#snake-game table {
+  display: block;
+  position: relative;
+  border-collapse: collapse;
+}
+
+#snake-game tbody {
+  position: relative;
+}
+
+#snake-game tr {
+  border: none;
+}
+
+#snake-game td {
+  text-align: center;
+  border: none;
+  line-height: 12px;
+  font-size: 12px;
+  max-width: 12px;
+  max-height: 12px;
+  padding: 0;
+}
+
+fieldset {
+  margin: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  position: relative;
+  min-width: 12px;
+  min-height: 12px;
+  padding: 0;
+}
