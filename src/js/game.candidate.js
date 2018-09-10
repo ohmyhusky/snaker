@@ -23,6 +23,7 @@ class GameUi {
     this._gameSpeedStart = 200;
     this._gameSpeedUpdate = 5;
     this._gameSpeedMin = 32;
+    this._frame = 0;
 
     /**
      * @type {number}
@@ -132,25 +133,39 @@ class GameUi {
   /* PART 1 - keyboard controls */
 
   bindArrow() {
-    document.body.addEventListener('keyup', e => KeyDirectionMap[e.key] && this.move(KeyDirectionMap[e.key]));
+    document.body.addEventListener('keyup', e => {
+      if(e.key === ' ') {
+        this.togglePaused();
+        return;
+      }
+      KeyDirectionMap[e.key] && this.move(KeyDirectionMap[e.key]);
+    });
   }
 
   /* PART 1 - change setTimeout operation to requestAnimationFrame */
   timeout() {
-    this.tick();
+    if(this._frame * 60 < this._gameSpeed) {
+      this._frame = this._frame + 1;
+      window.requestAnimationFrame(this._boundTimeout);
+      return;
+    }
+    this._frame = 0;
+
+    if(!this._paused) {
+      this.tick();
+    }
 
     if (this._running) {
-      this._timeoutId = window.setTimeout(this._boundTimeout, this._gameSpeed);
+      window.requestAnimationFrame(this._boundTimeout);
     }
   }
 
   startRunning() {
-    this._timeoutId = window.setTimeout(this._boundTimeout, this._gameSpeed);
+    window.requestAnimationFrame(this._boundTimeout);
     this._running = true;
   }
 
   stopRunning() {
-    window.clearTimeout(this._timeoutId);
     this._running = false;
   }
 
