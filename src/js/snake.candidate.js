@@ -3,7 +3,6 @@ import { Tiles, Direction } from './data/data_types.js';
 const defaultBoard = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -12,6 +11,7 @@ const defaultBoard = [
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -32,13 +32,17 @@ export const createSnake = config => {
   return new Snake(config);
 };
 
+function getRandomInt(mod = 10) {
+  return Math.floor(Math.random()* 1000) % mod;
+}
+
 /**
  * @type {Snake}
  */
 class Snake {
 
   /**
-   * @param {SnakeConfigParams} config 
+   * @param {SnakeConfigParams} config
    */
   constructor(config) {
     this._config = Object.assign({}, config);
@@ -50,6 +54,7 @@ class Snake {
     this._board = defaultBoard.map(row => row.slice());
     this._snake = [{ y: 10, x: 10 }];
     this._direction = Direction.Right;
+    this._fruitPosition = this.getFruitPosition();
   }
 
   /**
@@ -73,6 +78,38 @@ class Snake {
     return this._board[position.y][position.x];
   }
 
+  getFruitPosition() {
+    for(let x = 1; x < this._config.columns; x++) {
+      for(let y = 1; y < this._config.rows; y++) {
+        if(this._board[y][x] === Tiles.Fruit) {
+          return {
+            x,
+            y,
+          };
+        }
+      }
+    }
+    return undefined;
+  }
+
+  isValidFruitPosition(position) {
+    return position.x > 0 && position.x < this._config.columns
+      && position.y > 0 && position.y < this._config.rows
+      && this.getBoard()[position.y][position.x] !== Tiles.Snake;
+  }
+
+  generateNewFruitPosition() {
+    let x = 0, y = 0;
+    do {
+      x = getRandomInt(this._config.columns);
+      y = getRandomInt(this._config.rows);
+    } while(!this.isValidFruitPosition({x, y}));
+    return {
+      x,
+      y,
+    }
+  }
+
   /**
    * @param {number} direction Direction value for this position
    */
@@ -85,7 +122,7 @@ class Snake {
    * @returns {TickReturn}
    */
   tick() {
-   
+
     // very simple movement code which assumes a single length snake
     // no eating or dieing implemented yet.
 
@@ -99,20 +136,47 @@ class Snake {
     } else if (this._direction === Direction.Right) {
       this._snake[0].x += 1;
     }
-    
+
+    let justAteFruit = !1;
+    if(this._fruitPosition && this._snake[0].x === this._fruitPosition.x && this._snake[0].y === this._fruitPosition.y) {
+      justAteFruit = !0;
+    }
+
+    let newFruitPosition;
+    if(justAteFruit) {
+      newFruitPosition = this.generateNewFruitPosition();
+    }
+
+
+
+    const changes = [
+      {
+        position: oldPosition,
+        tileValue: Tiles.Empty
+      },
+      {
+        position: this._snake[0],
+        tileValue: Tiles.Snake
+      },
+    ];
+
+    if(justAteFruit) {
+      if(newFruitPosition.x === oldPosition.x && newFruitPosition.y === oldPosition.y) {
+        changes[0].tileValue = Tiles.Fruit;
+      } else {
+        changes.push({
+          position: newFruitPosition,
+          tileValue: Tiles.Fruit,
+        })
+      }
+
+      this._fruitPosition = newFruitPosition;
+    }
+
     return {
       gameOver: false,
-      eating: false,
-      changes: [
-        {
-          position: oldPosition,
-          tileValue: Tiles.Empty
-        },
-        {
-          position: this._snake[0],
-          tileValue: Tiles.Snake
-        }
-      ]
+      eating: justAteFruit,
+      changes,
     };
   }
 
