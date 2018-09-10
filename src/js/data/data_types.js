@@ -25,3 +25,18 @@ export const Direction = {
   Down: 3,
   Right: 4
 };
+
+export const KeyDirectionMap = {
+  'w': Direction.Up,
+  'W': Direction.Up,
+  'ArrowUp': Direction.Up,
+  's': Direction.Down,
+  'S': Direction.Down,
+  'ArrowDown': Direction.Down,
+  'a': Direction.Left,
+  'A': Direction.Left,
+  'ArrowLeft': Direction.Left,
+  'd': Direction.Right,
+  'D': Direction.Right,
+  'ArrowRight': Direction.Right,
+};

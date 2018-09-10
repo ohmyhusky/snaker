@@ -1,4 +1,4 @@
-import { Direction, Tiles } from './data/data_types.js';
+import { Direction, Tiles, KeyDirectionMap } from './data/data_types.js';
 
 import { createSnake } from './snake.candidate.js';
 
@@ -34,7 +34,7 @@ class GameUi {
     this._running = false;
 
     this._paused = false;
-    
+
     /**
      * @type {number | null}
      */
@@ -64,6 +64,8 @@ class GameUi {
     if (newCssHref !== currentCssHref) {
       linkElement.setAttribute('href', newCssHref);
     }
+
+    this.bindArrow();
   }
 
   init() {
@@ -129,6 +131,9 @@ class GameUi {
 
   /* PART 1 - keyboard controls */
 
+  bindArrow() {
+    document.body.addEventListener('keyup', e => KeyDirectionMap[e.key] && this.move(KeyDirectionMap[e.key]));
+  }
 
   /* PART 1 - change setTimeout operation to requestAnimationFrame */
   timeout() {
@@ -139,12 +144,12 @@ class GameUi {
     }
   }
 
-  startRunning() {    
+  startRunning() {
     this._timeoutId = window.setTimeout(this._boundTimeout, this._gameSpeed);
     this._running = true;
   }
 
-  stopRunning() {    
+  stopRunning() {
     window.clearTimeout(this._timeoutId);
     this._running = false;
   }
