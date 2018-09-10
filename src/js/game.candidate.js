@@ -32,6 +32,7 @@ class GameUi {
     this._gameSpeed = this._gameSpeedStart;
 
     this._nextUpdateTime = -1;
+    this.RATE = 60 / 5;
     this._running = false;
 
     this._paused = false;
@@ -143,7 +144,7 @@ class GameUi {
 
   /* PART 1 - change setTimeout operation to requestAnimationFrame */
   timeout() {
-    if(this._frame * 60 < this._gameSpeed) {
+    if(this._frame * this.RATE < this._gameSpeed) {
       this._frame = this._frame + 1;
       window.requestAnimationFrame(this._boundTimeout);
       return;
@@ -172,7 +173,7 @@ class GameUi {
 
 document.addEventListener('DOMContentLoaded', () => {
   /** Part 3 - change this to candidateRenderer when you're ready */
-  const renderer = tableRenderer;
+  const renderer = candidateRenderer;
 
   const game = new GameUi(document.getElementById('snake-game'), renderer);
 });

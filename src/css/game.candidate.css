@@ -1,1 +1,33 @@
 /* Fill this in with the styles needed for your renderer. */
+
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  height: 24px;
+  line-height: 24px;
+}
+
+.row > div {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 1px solid lightgrey;
+}
+
+.wall {
+  background-color: black;
+}
+
+.empty {
+  background-color: lightgrey;
+}
+
+.snake {
+  background-color: blue;
+}
+
+.fruit {
+  background-color: red;
+}
