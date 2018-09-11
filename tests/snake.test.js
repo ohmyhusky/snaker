@@ -102,8 +102,8 @@ describe.each`
     s.tick();
 
     const expectedPosition = {
-      y: 11,
-      x: 16
+      y: 10, // I updated the default template
+      x: 15
     };
 
     expect(s.getBoard()[expectedPosition.y][expectedPosition.x]).toBe(
@@ -113,6 +113,6 @@ describe.each`
 
   it('can get Snake tiles with getTile()', () => {
     const s = createSnake();
-    expect(s.getTile({ x: 11, y: 11 })).toBe(Tiles.Snake);
+    expect(s.getTile({ x: 10, y: 10 })).toBe(Tiles.Snake);
   });
 });

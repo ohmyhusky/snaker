@@ -1,8 +1,7 @@
-import { Direction, Tiles, KeyDirectionMap } from './data/data_types.js';
+import { KeyDirectionMap } from './data/data_types.js';
 
 import { createSnake } from './snake.candidate.js';
 
-import { tableRenderer } from './renderers/renderer.table.js';
 import { candidateRenderer } from './renderers/renderer.candidate.js';
 
 /**
@@ -31,7 +30,6 @@ class GameUi {
     this._lastPressedDirection = null;
     this._gameSpeed = this._gameSpeedStart;
 
-    this._nextUpdateTime = -1;
     this.RATE = 60 / 5;
     this._running = false;
 

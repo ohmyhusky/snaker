@@ -19,17 +19,43 @@ class Snake {
   /**
    * @param {SnakeConfigParams} config
    */
-  constructor(config) {
+  constructor(config = {}) {
+    const hasOwn = Object.prototype.hasOwnProperty;
+    let columns, rows;
+
+    if (hasOwn.call(config, "columns") && !hasOwn.call(config, "rows")) {
+      columns = config.columns;
+      config.rows = config.columns;
+    } else if (hasOwn.call(config, "columns") && !hasOwn.call(config, "rows")) {
+      rows = config.rows;
+      config.columns = config.rows;
+    } else if (!hasOwn.call(config, "columns") && !hasOwn.call(config, "rows")) {
+      columns = 20;
+      rows = 20;
+      config.columns = columns;
+      config.rows = rows;
+    } else {
+      columns = config.columns;
+      rows = config.rows;
+    }
+
     this._config = Object.assign({}, config);
-    const { columns, rows } = this._config;
+
+    if (!columns && rows && typeof rows === "number") {
+      columns = rows;
+    } else if (!rows && columns && typeof columns === "number") {
+      rows = columns;
+    }
 
     if (
       columns &&
       typeof columns === "number" &&
       columns > 4 &&
+      Math.floor(columns) === columns &&
       rows &&
       typeof rows === "number" &&
-      rows > 4
+      rows > 4 &&
+      Math.floor(rows) === rows
     ) {
       // currently ignores the config!
       // starts with a copy of defaultBoard (21x21),
@@ -52,7 +78,7 @@ class Snake {
       this._board[fruitPosition.y][fruitPosition.x] = Tiles.Fruit;
       this._fruitPosition = fruitPosition;
     } else {
-      console.error("Invalid arguments");
+      throw Error("Invalid arguments");
     }
   }
 
@@ -83,7 +109,7 @@ class Snake {
       position.y >= 0 &&
       position.y < this._config.rows
     ) {
-      return this._board[position.y][position.x];
+      return this.getBoard()[position.y][position.x];
     } else {
       console.error("Invalid position");
     }
@@ -187,6 +213,7 @@ class Snake {
     if (justAteFruit) {
       this._snake = [this._fruitPosition, oldHead, ...this._snake.slice(1)];
       newFruitPosition = this.generateNewFruitPosition();
+      this._board[newFruitPosition.y][newFruitPosition.x] = Tiles.Fruit;
     } else if (this._snake.length > 1) {
       for (let i = this._snake.length - 1; i > 1; i--) {
         this._snake[i] = this._snake[i - 1];
