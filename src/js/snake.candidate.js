@@ -208,7 +208,7 @@ class Snake {
       });
 
       this._fruitPosition = newFruitPosition;
-    } else {
+    } else if (!(tail.x === this._snake[0].x && tail.y === this._snake[0].y)) {
       changes.push({
         position: tail,
         tileValue: Tiles.Empty

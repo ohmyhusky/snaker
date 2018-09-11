@@ -89,10 +89,6 @@ class GameUi {
       preRenderedBoard,
       this._element
     );
-
-    /*const wall = document.querySelector('.wall');
-    wall.style.setProperty('--rows', `${this._snake._config.rows}`);
-    wall.style.setProperty('--columns', `${this._snake._config.columns}`);*/
   }
 
   togglePaused() {
