@@ -1,3 +1,4 @@
+import { Tiles } from "../data/data_types.js";
 /*
   Part 3 - Renderer
 */
@@ -29,18 +30,20 @@ export const candidateRenderer = {
     const boardInnerFragment = document.createDocumentFragment();
 
     const customData = board.map(line => {
-      const row = document.createElement("div");
-      row.className = 'row';
-      boardInnerFragment.appendChild(row);
       return line.map(tileInfo => {
-        const box = document.createElement('div');
-        box.className = ['empty', 'wall', 'snake', 'fruit'][tileInfo.tileValue];
-        row.appendChild(box);
-        return box;
+        const tile = document.createElement("div");
+        tile.className = ["empty", "wall", "snake", "fruit"][tileInfo.tileValue];
+        tileInfo.tileValue !== Tiles.Wall && boardInnerFragment.appendChild(tile);
+        return tile;
       });
     }, []);
 
-    element.appendChild(boardInnerFragment);
+    const wall = document.createElement("div");
+    wall.className = "wall";
+    wall.style.setProperty('--rows', `${board.length - 2}`);
+    wall.style.setProperty('--columns', `${board[0].length - 2}`);
+    wall.appendChild(boardInnerFragment);
+    element.appendChild(wall);
     return customData;
   },
 
@@ -52,7 +55,7 @@ export const candidateRenderer = {
   renderChanges: (customData, changes) => {
     changes.forEach(change => {
       const box = customData[change.position.y][change.position.x];
-      box.className = ['empty', 'wall', 'snake', 'fruit'][change.tileValue];
+      box.className = ["empty", "wall", "snake", "fruit"][change.tileValue];
     });
   }
 };

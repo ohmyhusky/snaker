@@ -42,9 +42,12 @@ class GameUi {
      */
     this._boundTimeout = this.timeout.bind(this);
 
+    const rows = 30;
+    const columns = 55;
+
     this._snake = createSnake({
-      rows: 30,
-      columns: 55,
+      rows,
+      columns,
       nextFruitFn: undefined,
     });
 
@@ -86,6 +89,10 @@ class GameUi {
       preRenderedBoard,
       this._element
     );
+
+    /*const wall = document.querySelector('.wall');
+    wall.style.setProperty('--rows', `${this._snake._config.rows}`);
+    wall.style.setProperty('--columns', `${this._snake._config.columns}`);*/
   }
 
   togglePaused() {
