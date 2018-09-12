@@ -15,7 +15,8 @@
   },
   "jest": {
     "testMatch": [
-      "**/*.spec.js"
+      "**/*.spec.js",
+      "**/*.test.js"
     ],
     "moduleDirectories": [
       "node_modules",
